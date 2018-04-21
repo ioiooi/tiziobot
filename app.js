@@ -3,7 +3,6 @@ const app = require('express')();
 const server = require('http').Server(app);
 const bodyParser = require('body-parser');
 const logger = require('morgan');
-const helper = require('./helper.js');
 
 // slack sdk
 const { WebClient } = require('@slack/client');
@@ -31,7 +30,7 @@ app.use('/dev', devRouter);
 const port = normalizePort(process.env.PORT || '3000');
 server.listen(port, () => console.log(`listening on port: ${port}`));
 
-const normalizePort = val => {
+function normalizePort(val) {
   const port = parseInt(val, 10);
 
   if (isNaN(port)) {
