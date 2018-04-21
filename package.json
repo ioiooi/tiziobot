@@ -1,0 +1,20 @@
+{
+  "name": "tizio-slack-bot",
+  "version": "1.0.0",
+  "description": "santangelo",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app",
+    "watch-node": "nodemon --delay 1000ms app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Eugen Mayer",
+  "license": "ISC",
+  "dependencies": {
+    "@slack/client": "^4.1.0",
+    "body-parser": "^1.18.2",
+    "dotenv": "^5.0.1",
+    "express": "^4.16.3",
+    "morgan": "^1.9.0"
+  }
+}

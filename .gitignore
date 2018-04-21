@@ -1,0 +1,8 @@
+node_modules
+.vscode
+.idea
+*.css.map
+*.js.map
+nodemon.json
+.env
+scratchpad.js
