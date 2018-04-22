@@ -2,14 +2,16 @@ const express = require('express');
 const router = express.Router();
 
 router.post('/', (req, res) => {
-  const payload = JSON.parse(req.body['payload']);
-  const action = payload.actions[0].value;
-  const userId = payload.user.id;
-  const responseMessage = payload.original_message;
+  // extract action value, user id and original message
+  const {
+    actions: [{ value: action }],
+    user: { id: userId },
+    original_message: message
+  } = JSON.parse(req.body['payload']);
 
-  updateFields(responseMessage, action, userId);
+  updateFields(message, action, userId);
 
-  res.json(responseMessage);
+  res.json(message);
 });
 
 // menus actions with "data_source: external" get send here
