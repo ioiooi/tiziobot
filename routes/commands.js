@@ -14,7 +14,7 @@ router.post('/', (req, res) => {
     web.chat
       .postEphemeral({
         channel: process.env.SLACK_HASHCODE_CHANNEL_ID,
-        text: '`Provide a 24 hours time format `HH:mm`',
+        text: '`Provide a 24 hours time format HH:mm`',
         user: user_id
       })
       .then(res => console.log(`Message sent ${res.ts}`))
