@@ -9,7 +9,7 @@ router.post('/', (req, res) => {
     original_message: message
   } = JSON.parse(req.body['payload']);
 
-  updateFields(message, action, userId);
+  updateMessage(message, action, userId);
 
   res.json(message);
 });
@@ -20,52 +20,106 @@ router.post('/menus', (req, res) => {
   res.sendStatus(200);
 });
 
-const updateFields = (message, action, userId) => {
+const updateMessage = (message, action, userId) => {
   const fields = message.attachments[0].fields;
-  for (let field of fields) {
-    if (field.value.includes(userId)) return;
+  const index = fieldIndexOfUser(fields, userId);
+
+  if (index < 0) {
+    // new user
+    addUser(fields[action], userId);
+  } else if (index != action) {
+    // user switch
+    removeUser(fields[index], userId);
+    addUser(fields[action], userId);
   }
-
-  // switch= userId in fields[0].value and action 1
-  // switch= userId in fields[1].value and action 0
-  // userArray = field.value.match(/\w{9}/g)
-
-  addTitle(fields, action);
-  addUserId(fields[action], userId);
-  incrementButton(message, action);
+  updateFieldsTitle(fields);
+  updateButtons(message);
 };
 
-const addTitle = (fields, action) => {
-  if (fields[action].title.length === 0) {
-    if (parseInt(action) === 0) {
-      fields[action].title = 'In';
-    } else {
-      fields[action].title = 'Out';
-    }
+/**
+ * Search for user id in fields array
+ * @param {Array} fields Array of field objects
+ * @param {string} userId User id
+ * @returns {number} The index of the field otherwise -1
+ */
+const fieldIndexOfUser = (fields, userId) => {
+  return fields.findIndex(field => {
+    return field.value.includes(userId);
+  });
+};
+
+const addUser = (field, userId) => {
+  field.value = createFieldValue(addUserToArray(field, userId));
+};
+
+const removeUser = (field, userId) => {
+  field.value = createFieldValue(removeUserFromArray(field, userId));
+};
+
+const createFieldValue = userArray => {
+  if (userArray.length === 0) {
+    return '';
+  }
+
+  return userArray.join(', ');
+};
+
+/**
+ * @param {Object} field Field Object
+ * @returns {Array} Array of matches, or empty array if there were no matches
+ */
+const createUserArray = field => {
+  if (!field.value.match(/<@\w{9}>/g)) {
+    return [];
+  }
+
+  return field.value.match(/<@\w{9}>/g);
+};
+
+const addUserToArray = (field, userId) => {
+  const arr = createUserArray(field);
+  arr.push(`<@${userId}>`);
+  return arr;
+};
+
+const removeUserFromArray = (field, userId) => {
+  const userArray = createUserArray(field);
+  const index = userArray.findIndex(ele => ele.includes(userId));
+  userArray.splice(index, 1);
+  return userArray;
+};
+
+const updateFieldsTitle = fields => {
+  const inArray = createUserArray(fields[0]);
+  const outArray = createUserArray(fields[1]);
+  if (inArray.length === 0) {
+    fields[0].title = '';
+  } else {
+    fields[0].title = `In (${inArray.length})`;
+  }
+
+  if (outArray.length === 0) {
+    fields[1].title = '';
+  } else {
+    fields[1].title = `Out (${outArray.length})`;
   }
 };
 
-const addUserId = (field, userId) => {
-  field.value.length === 0
-    ? (field.value += `<@${userId}>`)
-    : (field.value += `, <@${userId}>`);
-};
-
-const incrementButton = (message, action) => {
-  const selectedAction = message.attachments[0].actions[action];
-  const found = selectedAction.text.match(/\d+/);
-
-  if (!found) {
-    selectedAction.text += ' 1';
-
-    return;
+const updateButtons = message => {
+  const actions = message.attachments[0].actions;
+  const inArray = createUserArray(message.attachments[0].fields[0]);
+  const outArray = createUserArray(message.attachments[0].fields[1]);
+  if (inArray.length === 0) {
+    actions[0].text = ':spaghetti:';
+  } else {
+    actions[0].text = `:spaghetti: ${inArray.length}`;
   }
 
-  let int = parseInt(found[0]);
-  ++int;
-  let newText = found['input'].slice(0, found['index']);
-  newText += int;
-  selectedAction.text = newText;
+  if (outArray.length === 0) {
+    actions[1].text = ':no_pedestrians:';
+  } else {
+    actions[1].text = `:no_pedestrians: ${outArray.length}`;
+  }
 };
 
 module.exports = router;
