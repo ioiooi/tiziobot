@@ -19,36 +19,50 @@ router.post('/menus', (req, res) => {
 });
 
 const updateFields = (message, action, userId) => {
-  for (let obj of message.attachments[0].fields) {
-    if (obj.value.includes(userId)) return;
+  const fields = message.attachments[0].fields;
+  for (let field of fields) {
+    if (field.value.includes(userId)) return;
   }
 
-  if (message.attachments[0].fields[action].title.length === 0) {
-    action == 0
-      ? (message.attachments[0].fields[action].title = 'In')
-      : (message.attachments[0].fields[action].title = 'Out');
-  }
+  // switch= userId in fields[0].value and action 1
+  // switch= userId in fields[1].value and action 0
+  // userArray = field.value.match(/\w{9}/g)
 
-  message.attachments[0].fields[action].value.length === 0
-    ? (message.attachments[0].fields[action].value += `<@${userId}>`)
-    : (message.attachments[0].fields[action].value += `, <@${userId}>`);
-
+  addTitle(fields, action);
+  addUserId(fields[action], userId);
   incrementButton(message, action);
 };
 
+const addTitle = (fields, action) => {
+  if (fields[action].title.length === 0) {
+    if (parseInt(action) === 0) {
+      fields[action].title = 'In';
+    } else {
+      fields[action].title = 'Out';
+    }
+  }
+};
+
+const addUserId = (field, userId) => {
+  field.value.length === 0
+    ? (field.value += `<@${userId}>`)
+    : (field.value += `, <@${userId}>`);
+};
+
 const incrementButton = (message, action) => {
-  if (!/\d+/.test(message.attachments[0].actions[action].text)) {
-    message.attachments[0].actions[action].text += ' 1';
+  const actions = message.attachments[0].actions;
+  if (!/\d+/.test(actions[action].text)) {
+    actions[action].text += ' 1';
 
     return;
   }
 
-  const found = message.attachments[0].actions[action].text.match(/\d+/);
+  const found = actions[action].text.match(/\d+/);
   let int = parseInt(found[0]);
   ++int;
   let newText = found['input'].slice(0, found['index']);
   newText += int;
-  message.attachments[0].actions[action].text = newText;
+  actions[action].text = newText;
 };
 
 module.exports = router;
