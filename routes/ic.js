@@ -23,8 +23,10 @@ router.post('/menus', (req, res) => {
 const updateMessage = (message, action, userId) => {
   const fields = message.attachments[0].fields;
   const index = fieldIndexOfUser(fields, userId);
-
-  if (index < 0) {
+  
+  if (index == action) {
+    return;
+  } else if (index < 0) {
     // new user
     addUser(fields[action], userId);
   } else if (index != action) {
