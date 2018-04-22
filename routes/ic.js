@@ -50,19 +50,20 @@ const addUserId = (field, userId) => {
 };
 
 const incrementButton = (message, action) => {
-  const actions = message.attachments[0].actions;
-  if (!/\d+/.test(actions[action].text)) {
-    actions[action].text += ' 1';
+  const selectedAction = message.attachments[0].actions[action];
+  const found = selectedAction.text.match(/\d+/);
+
+  if (!found) {
+    selectedAction.text += ' 1';
 
     return;
   }
 
-  const found = actions[action].text.match(/\d+/);
   let int = parseInt(found[0]);
   ++int;
   let newText = found['input'].slice(0, found['index']);
   newText += int;
-  actions[action].text = newText;
+  selectedAction.text = newText;
 };
 
 module.exports = router;
