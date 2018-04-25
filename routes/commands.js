@@ -7,13 +7,13 @@ router.post('/', (req, res) => {
 
   if (regex.test(text)) {
     web.chat
-      .postMessage(createMessage(process.env.SLACK_HASHCODE_CHANNEL_ID, text))
+      .postMessage(createMessage(process.env.SLACK_LUNCHABLES_CHANNEL_ID, text))
       .then(res => console.log(`Message sent ${res.ts}`))
       .catch(console.error);
   } else {
     web.chat
       .postEphemeral({
-        channel: process.env.SLACK_HASHCODE_CHANNEL_ID,
+        channel: process.env.SLACK_LUNCHABLES_CHANNEL_ID,
         text: '`Provide a 24 hours time format HH:mm`',
         user: user_id
       })
