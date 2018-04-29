@@ -1,42 +1,26 @@
 const express = require('express');
 const router = express.Router();
+const fetch = require('node-fetch');
 
 router.get('/foo', (req, res) => {
-  const web = req.app.get('web');
   const conversationId = process.env.SLACK_HASHCODE_CHANNEL_ID;
 
   const message = {
     channel: conversationId,
-    text: `sup sup sup`,
-    attachments: [
-      {
-        fallback: 'foobar.',
-        color: 'good',
-        text: 'Hey you!',
-        callback_id: 'test_inter_message',
-        attachment_type: 'default',
-        actions: [
-          {
-            name: 'tizio',
-            text: ':spaghetti:',
-            type: 'button',
-            value: 'firstAction'
-          },
-          {
-            name: 'tizio',
-            text: ':no_pedestrians:',
-            type: 'button',
-            value: 'secondAction'
-          }
-        ]
-      }
-    ]
+    text: `go in 2 minutes`,
+    user: <insertUserToken>
   };
 
-  web.chat
-    .postMessage(message)
-    .then(res => console.log(`Message sent ${res.ts}`))
-    .catch(console.error);
+  fetch('https://slack.com/api/chat.postEphemeral', {
+    method: 'POST',
+    body: JSON.stringify(message),
+    headers: {
+      'Content-type': 'application/json',
+      'Authorization': `Bearer ${process.env.SLACK_BOT_TOKEN}`
+    }
+  })
+    .then(res => res.json())
+    .then(json => console.log(json));
 
   res.status(200).end();
 });
