@@ -9,7 +9,7 @@ router.post('/', (req, res) => {
   
   if (regex.test(text)) {
     res.json(
-      createMessage(process.env.SLACK_HASHCODE_CHANNEL_ID, text, user_id)
+      createMessage(process.env.SLACK_LUNCHABLES_CHANNEL_ID, text, user_id)
     );
   } else {
     res.json({ text: 'Provide a 24 hours time format `HH:mm`' });
