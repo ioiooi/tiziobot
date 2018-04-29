@@ -1,59 +1,31 @@
 const express = require('express');
 const router = express.Router();
+const attachment = require('../lib/attachment');
 
 router.post('/', (req, res) => {
-  const web = req.app.get('web');
   const { text, user_id } = req.body;
-
+  // HH:mm
+  const regex = /([0-1]\d|2[0-3]):[0-5]\d/;
+  
   if (regex.test(text)) {
-    web.chat
-      .postMessage(createMessage(process.env.SLACK_LUNCHABLES_CHANNEL_ID, text))
-      .then(res => console.log(`Message sent ${res.ts}`))
-      .catch(console.error);
+    res.json(
+      createMessage(process.env.SLACK_HASHCODE_CHANNEL_ID, text, user_id)
+    );
   } else {
-    web.chat
-      .postEphemeral({
-        channel: process.env.SLACK_LUNCHABLES_CHANNEL_ID,
-        text: '`Provide a 24 hours time format HH:mm`',
-        user: user_id
-      })
-      .then(res => console.log(`Message sent ${res.ts}`))
-      .catch(console.error);
+    res.json({ text: 'Provide a 24 hours time format `HH:mm`' });
   }
 
   res.status(200).end();
 });
 
-const regex = /([0-1]\d|2[0-3]):[0-5]\d/;
-const createMessage = (channelId, text) => {
+const createMessage = (channelId, text, user) => {
+  const inArr = [user];
+
   return {
     channel: channelId,
-    text: `Tizio ${text} Uhr?`,
-    attachments: [
-      {
-        fallback: 'foobar.',
-        color: 'good',
-        text: 'You in or you out?!',
-        callback_id: 'tizio_lunch',
-        attachment_type: 'default',
-        actions: [
-          {
-            name: 'tizio_in',
-            text: ':spaghetti:',
-            type: 'button',
-            style: 'primary',
-            value: 0
-          },
-          {
-            name: 'tizio_out',
-            text: ':no_pedestrians:',
-            type: 'button',
-            value: 1
-          }
-        ],
-        fields: [{}, {}]
-      }
-    ]
+    response_type: 'in_channel',
+    text: `<!channel> Tizio ${text} Uhr?`,
+    attachments: attachment.createAttachment(inArr, [])
   };
 };
 

@@ -4,12 +4,6 @@ const server = require('http').Server(app);
 const bodyParser = require('body-parser');
 const logger = require('morgan');
 
-// slack sdk
-const { WebClient } = require('@slack/client');
-const token = process.env.SLACK_BOT_TOKEN;
-const web = new WebClient(token);
-app.set('web', web);
-
 // routes
 const eventsRouter = require('./routes/events');
 const commandsRouter = require('./routes/commands');
@@ -44,4 +38,4 @@ function normalizePort(val) {
   }
 
   return false;
-};
+}
