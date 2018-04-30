@@ -7,8 +7,8 @@ router.get('/foo', (req, res) => {
 
   const message = {
     channel: conversationId,
-    text: `go in 2 minutes`,
-    user: <insertUserToken>
+    text: `Reminder: go in 2 minutes`,
+    user: 'U08MKNR6C'
   };
 
   fetch('https://slack.com/api/chat.postEphemeral', {
@@ -16,7 +16,7 @@ router.get('/foo', (req, res) => {
     body: JSON.stringify(message),
     headers: {
       'Content-type': 'application/json',
-      'Authorization': `Bearer ${process.env.SLACK_BOT_TOKEN}`
+      Authorization: `Bearer ${process.env.SLACK_BOT_TOKEN}`
     }
   })
     .then(res => res.json())
