@@ -15,12 +15,6 @@ router.post('/', (req, res) => {
   res.json(message);
 });
 
-// menus actions with "data_source: external" get send here
-router.post('/menus', (req, res) => {
-  console.log(req.body);
-  res.sendStatus(200);
-});
-
 const updateMessage = (message, action, userId) => {
   const index = findUserField(message.attachments[0].fields, userId);
 

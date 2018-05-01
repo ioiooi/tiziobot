@@ -5,21 +5,16 @@ const bodyParser = require('body-parser');
 const logger = require('morgan');
 
 // routes
-const eventsRouter = require('./routes/events');
 const commandsRouter = require('./routes/commands');
-const icr = require('./routes/ic');
+const actionsRouter = require('./routes/actions');
 
 app.use(logger('dev'));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 // setup routes
-app.use('/events', eventsRouter);
 app.use('/commands', commandsRouter);
-app.use('/ic', icr);
-
-const devRouter = require('./routes/dev');
-app.use('/dev', devRouter);
+app.use('/actions', actionsRouter);
 
 const port = normalizePort(process.env.PORT || '3000');
 server.listen(port, () => console.log(`listening on port: ${port}`));
